@@ -1,0 +1,9 @@
+Using System trayIcon for staying the App open in background and showing notifications periodically.
+
+TrayIcon package: java.awt.TrayIcon;
+System tray: java.awt.SystemTray;
+Image for show in tray: java.awt.Image;
+
+first of all we check if the system supports tray or not.
+after, we create image, trayIcon, and systemTray objects. system tray can have ToolTip also.
+next step is adding trayIcon to systemTray and then displaying message with trayIcon.
