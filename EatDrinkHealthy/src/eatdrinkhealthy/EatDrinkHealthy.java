@@ -22,13 +22,13 @@ public class EatDrinkHealthy extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        AnchorPane mainPane = new AnchorPane();
-
-        Scene scene;
+        AnchorPane mainPane;
         try {
-            scene = FXMLLoader.load(getClass().getResource("MainAnchorPaneLayout.fxml"));
+            mainPane = FXMLLoader.load(getClass().getResource("MainAnchorPaneLayout.fxml"));
+            Scene scene = new Scene(mainPane);
             scene.getStylesheets().add(getClass().getResource("mainanchorpanelayout.css").toExternalForm());
             primaryStage.setTitle("Eat & Drink Healthy");
+            primaryStage.setResizable(false);
             primaryStage.setScene(scene);
             primaryStage.show();
         } catch (IOException ex) {
