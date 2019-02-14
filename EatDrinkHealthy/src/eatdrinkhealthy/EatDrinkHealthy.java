@@ -29,7 +29,6 @@ public class EatDrinkHealthy extends Application {
     public void start(Stage primaryStage) {
         if(SystemTray.isSupported()){
             System.out.println("tray supported");
-            new EatDrinkHealthy().displayTray();
         }
         else{
             System.err.println("Tray is not supported");
@@ -41,7 +40,7 @@ public class EatDrinkHealthy extends Application {
             scene.getStylesheets().add(getClass().getResource("mainanchorpanelayout.css").toExternalForm());
             primaryStage.setTitle("Eat & Drink Healthy");
             primaryStage.setResizable(false);
-            primaryStage.getIcons().add(new javafx.scene.image.Image("/icons/water2.png"));
+            primaryStage.getIcons().add(new javafx.scene.image.Image("/icons/water4-16.png"));
             primaryStage.setScene(scene);
             primaryStage.show();
         } catch (IOException ex) {
@@ -57,11 +56,11 @@ public class EatDrinkHealthy extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-    private void displayTray(){
+    public void displayTray(){
         SystemTray tray = SystemTray.getSystemTray();
         Image imageIcon = null;
         try {
-            imageIcon = ImageIO.read(getClass().getResource("/icons/water1.png"));
+            imageIcon = ImageIO.read(getClass().getResource("/icons/water4-16.png"));
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
         }
