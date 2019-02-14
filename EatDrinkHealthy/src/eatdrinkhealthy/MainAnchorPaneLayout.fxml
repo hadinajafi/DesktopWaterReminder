@@ -6,9 +6,11 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
 <AnchorPane id="AnchorPane" fx:id="root" prefHeight="400.0" prefWidth="659.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="eatdrinkhealthy.MainAnchorPaneLayoutController">
@@ -18,7 +20,7 @@
    <children>
       <TabPane fx:id="tabPane" prefHeight="400.0" prefWidth="659.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
-          <Tab text="Daily">
+          <Tab text="Today">
             <content>
               <AnchorPane fx:id="tabDailyAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
@@ -45,7 +47,16 @@
           </Tab>
           <Tab text="Settings">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <HBox layoutX="159.0" layoutY="14.0" prefHeight="28.0" prefWidth="342.0" AnchorPane.bottomAnchor="329.0" AnchorPane.leftAnchor="159.0" AnchorPane.rightAnchor="158.0" AnchorPane.topAnchor="14.0">
+                           <children>
+                              <Label text="Time Interval (min) " />
+                              <TextField fx:id="timeIntervalTextField" text="60" />
+                              <Button fx:id="timeIntervalSaveBtn" mnemonicParsing="false" text="Save &amp; Apply" />
+                           </children>
+                        </HBox>
+                     </children></AnchorPane>
             </content>
           </Tab>
         </tabs>
