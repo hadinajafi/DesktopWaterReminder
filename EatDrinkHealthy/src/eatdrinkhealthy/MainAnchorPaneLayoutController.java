@@ -8,19 +8,24 @@ package eatdrinkhealthy;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.PieChart.Data;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TextField;
+
 import javafx.scene.layout.AnchorPane;
 
 /**
@@ -43,9 +48,19 @@ public class MainAnchorPaneLayoutController implements Initializable {
     @FXML
     private AnchorPane tabDailyAnchorPane;
     @FXML
-    private TextField timeIntervalTextField;
+    private Spinner<Integer> timeIntervalTextField;
     @FXML
     private Button timeIntervalSaveBtn;
+    
+    private Map<String, Integer> userData;
+    
+    @FXML
+    void saveApplyBtnAction(ActionEvent event) {
+        userData.replace("timerPeriod", Integer.parseInt(timeIntervalTextField.getEditor().getText()));
+        FileStreams stream = new FileStreams();
+        stream.setData(userData);
+        startTimer();
+    }
 
     /**
      * Initializes the controller class.
@@ -54,18 +69,50 @@ public class MainAnchorPaneLayoutController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        userData = new HashMap<>();
         tabPane.tabMinWidthProperty().bind(root.widthProperty().divide(tabPane.getTabs().size()).subtract(20.5));
         statPieChart.setTitle("How much you Drunk water today");
         ObservableList<Data> data = FXCollections.observableArrayList(new PieChart.Data("Water Drunken", 00.75), new PieChart.Data("Didn't Drink yet!", 00.25));
         statPieChart.setData(data);
+        
+        timeIntervalTextField.setValueFactory(new SpinnerValueFactory<Integer>() {
+            @Override
+            public void decrement(int steps) {
+                timeIntervalTextField.getEditor().setText(String.valueOf(timeIntervalTextField.getValue()-1));
+            }
+
+            @Override
+            public void increment(int steps) {
+                timeIntervalTextField.getEditor().setText(String.valueOf(timeIntervalTextField.getValue()+1));
+            }
+        });
+        
+        timeIntervalTextField.getEditor().setText(String.valueOf(loadTimer()));//load default or saved value to the spinner
+        startTimer();
+    }  
+    
+    private void startTimer(){
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 new EatDrinkHealthy().displayTray();
             }
-        }, 4*1000, calculateLeftHours()+calculateLeftMinute());
-    }    
+        }, loadTimer(), calculateLeftHours()+calculateLeftMinute());
+    }
+    
+    private int loadTimer(){
+        FileStreams streams = new FileStreams();
+        userData = streams.getData();
+        if(!userData.containsKey("timerPeriod") || userData.isEmpty()){
+            userData.put("timerPeriod", 60);
+            streams.setData(userData);
+            return 60;
+        }
+        else{
+            return (int)userData.get("timerPeriod");
+        }
+    }
     
     /**
      * Calculate the Hours left in the day.
