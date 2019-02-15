@@ -7,16 +7,22 @@ package eatdrinkhealthy;
 
 import java.awt.AWTException;
 import java.awt.Image;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javax.imageio.ImageIO;
 
 /**
@@ -25,24 +31,34 @@ import javax.imageio.ImageIO;
  */
 public class EatDrinkHealthy extends Application {
 
+    private Stage primaryStage;
+    private boolean firstTray = true;
+
     @Override
     public void start(Stage primaryStage) {
-        if(SystemTray.isSupported()){
-            System.out.println("tray supported");
-        }
-        else{
-            System.err.println("Tray is not supported");
-        }
+        this.primaryStage = primaryStage;
+        displayTray(false);
         AnchorPane mainPane;
         try {
             mainPane = FXMLLoader.load(getClass().getResource("MainAnchorPaneLayout.fxml"));
             Scene scene = new Scene(mainPane);
             scene.getStylesheets().add(getClass().getResource("mainanchorpanelayout.css").toExternalForm());
-            primaryStage.setTitle("Eat & Drink Healthy");
-            primaryStage.setResizable(false);
-            primaryStage.getIcons().add(new javafx.scene.image.Image("/icons/water4-16.png"));
-            primaryStage.setScene(scene);
-            primaryStage.show();
+            this.primaryStage.setTitle("Eat & Drink Healthy");
+            this.primaryStage.setResizable(false);
+            this.primaryStage.getIcons().add(new javafx.scene.image.Image("/icons/water4-16.png"));
+            this.primaryStage.setScene(scene);
+            this.primaryStage.show();
+            Platform.setImplicitExit(false);
+            primaryStage.setOnCloseRequest((WindowEvent event) -> {
+                Platform.runLater(() -> {
+                    if (SystemTray.isSupported()) {
+                        primaryStage.hide();
+                        displayTray(false);
+                    } else {
+                        System.exit(0);
+                    }
+                });
+            });
         } catch (IOException ex) {
             Logger.getLogger(EatDrinkHealthy.class.getName()).log(Level.SEVERE, null, ex);
             System.err.println(ex.getMessage());
@@ -56,7 +72,14 @@ public class EatDrinkHealthy extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-    public void displayTray(){
+
+    public void displayTray(boolean showMessage) {
+        PopupMenu trayMenu = new PopupMenu("Menu");
+        MenuItem exitBtn = new MenuItem("Exit");
+        trayMenu.add(exitBtn);
+        exitBtn.addActionListener((java.awt.event.ActionEvent e) -> {
+            System.exit(0);
+        });
         SystemTray tray = SystemTray.getSystemTray();
         Image imageIcon = null;
         try {
@@ -64,14 +87,44 @@ public class EatDrinkHealthy extends Application {
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
         }
-        TrayIcon icon = new TrayIcon(imageIcon);
+        TrayIcon icon = new TrayIcon(imageIcon, "Drink Water", trayMenu);
+        icon.setToolTip("Eat & Drink Healthy");
+        
+        MouseAdapter trayIconMouseAdapter = new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                try {
+                    if (e.getButton() == MouseEvent.BUTTON3) {
+                        trayMenu.show(e.getComponent(), e.getX(), e.getY());
+                    } else if (e.getButton() == 1) {
+                        if (!primaryStage.isShowing()) {
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    primaryStage.show();
+                                }
+                            });
+                        }
+                    }
+                } catch (IllegalArgumentException | NullPointerException ex) {
+                    System.err.println(ex.getMessage());
+                }
+            }
+
+        };
+        
+        icon.addMouseListener(trayIconMouseAdapter);
         icon.setImageAutoSize(true);
-        icon.setToolTip("Tray Icon demo");
         try {
-            tray.add(icon);
+            if(firstTray){
+                tray.add(icon);
+                firstTray = false;
+            }
         } catch (AWTException ex) {
             System.err.println(ex.getMessage());
         }
-        icon.displayMessage("Drink Water Time!", "It's time to Drink Water please", TrayIcon.MessageType.INFO);
+        if (showMessage) {
+            icon.displayMessage("Drink Water Time!", "It's time to Drink Water please", TrayIcon.MessageType.INFO);
+        }
     }
 }
