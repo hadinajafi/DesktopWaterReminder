@@ -72,6 +72,6 @@ public class EatDrinkHealthy extends Application {
         } catch (AWTException ex) {
             System.err.println(ex.getMessage());
         }
-        icon.displayMessage("Hello World", "Notification demo", TrayIcon.MessageType.INFO);
+        icon.displayMessage("Drink Water Time!", "It's time to Drink Water please", TrayIcon.MessageType.INFO);
     }
 }
