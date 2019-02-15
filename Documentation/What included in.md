@@ -1,5 +1,5 @@
-Using System trayIcon for staying the App open in background and showing notifications periodically.
-Libraries: Jackson
+Using System trayIcon for staying the App open in background and showing notifications periodically.<br>
+**Libraries: *Jackson***
   For store user data in JSON files.
 
 TrayIcon package: java.awt.TrayIcon;
