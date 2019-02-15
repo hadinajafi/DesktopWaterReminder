@@ -58,8 +58,9 @@ public class MainAnchorPaneLayoutController implements Initializable {
         userData.replace("timerPeriod", Integer.parseInt(timeIntervalTextField.getEditor().getText()));
         FileStreams stream = new FileStreams();
         stream.setData(userData);
-        stopTimer();
-        startTimer();
+        timer.cancel();
+        timer.purge();
+        createTimer();
     }
 
     /**
@@ -89,25 +90,17 @@ public class MainAnchorPaneLayoutController implements Initializable {
         });
         
         timeIntervalTextField.getEditor().setText(String.valueOf(loadTimer()));//load default or saved value to the spinner
-        startTimer();
+        createTimer();
     }  
     
-    private void startTimer(){
+    private void createTimer(){
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                new EatDrinkHealthy().displayTray();
+                new EatDrinkHealthy().displayTray(true);
             }
         }, loadTimer()*60000, loadTimer()*60000);
-    }
-    
-    private void cancelTimer(){
-        timer.cancel();
-    }
-    
-    private void stopTimer(){
-        timer.purge();
     }
     
     private int loadTimer(){
