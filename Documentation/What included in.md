@@ -14,6 +14,6 @@ next step is adding trayIcon to systemTray and then displaying message with tray
 1. AnchorPane is the main container for ability of anchoring components on resizing.
 2. contains a tabbed layout for "Daily", "Settings" pages right now. (Refere to the future plan file, there will be more like food calories, monthly view and notification manager.)
 3. Another anchorPane inside Daily tab to show these information:
-  a. how much you drink   b. how much you need to drink    c. how much you missed to drink water
-  d. a little status indicatior (progressbar or chart) to show to user how notifications handled. (how many done, how many didn't how many ignored).
+  a. next notification and skip button to skip it.
+  b. Pie chart to show how mcuh user drunk water today.
 4. AnchorPane for showing next notification status and recent one. also can done it or ignore it before it's time.
