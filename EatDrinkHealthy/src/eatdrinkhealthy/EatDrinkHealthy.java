@@ -37,7 +37,7 @@ public class EatDrinkHealthy extends Application {
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        displayTray(false);
+        displayTray();
         AnchorPane mainPane;
         try {
             mainPane = FXMLLoader.load(getClass().getResource("MainAnchorPaneLayout.fxml"));
@@ -45,7 +45,7 @@ public class EatDrinkHealthy extends Application {
             scene.getStylesheets().add(getClass().getResource("mainanchorpanelayout.css").toExternalForm());
             this.primaryStage.setTitle("Eat & Drink Healthy");
             this.primaryStage.setResizable(false);
-            this.primaryStage.getIcons().add(new javafx.scene.image.Image("/icons/water4-16.png"));
+            this.primaryStage.getIcons().add(new javafx.scene.image.Image("/icons/glass_48.png"));
             this.primaryStage.setScene(scene);
             this.primaryStage.show();
             Platform.setImplicitExit(false);
@@ -53,7 +53,7 @@ public class EatDrinkHealthy extends Application {
                 Platform.runLater(() -> {
                     if (SystemTray.isSupported()) {
                         primaryStage.hide();
-                        displayTray(false);
+                        displayTray();
                     } else {
                         System.exit(0);
                     }
@@ -73,7 +73,7 @@ public class EatDrinkHealthy extends Application {
         launch(args);
     }
 
-    public void displayTray(boolean showMessage) {
+    public void displayTray() {
         PopupMenu trayMenu = new PopupMenu("Menu");
         MenuItem exitBtn = new MenuItem("Exit");
         trayMenu.add(exitBtn);
@@ -83,7 +83,7 @@ public class EatDrinkHealthy extends Application {
         SystemTray tray = SystemTray.getSystemTray();
         Image imageIcon = null;
         try {
-            imageIcon = ImageIO.read(getClass().getResource("/icons/water4-16.png"));
+            imageIcon = ImageIO.read(getClass().getResource("/icons/glass_48.png"));
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
         }
@@ -122,9 +122,6 @@ public class EatDrinkHealthy extends Application {
             }
         } catch (AWTException ex) {
             System.err.println(ex.getMessage());
-        }
-        if (showMessage) {
-            icon.displayMessage("Drink Water Time!", "It's time to Drink Water please", TrayIcon.MessageType.INFO);
         }
     }
 }
