@@ -6,8 +6,6 @@
 package eatdrinkhealthy;
 
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -80,12 +78,13 @@ public class MainAnchorPaneLayoutController implements Initializable {
         timeIntervalTextField.setValueFactory(new SpinnerValueFactory<Integer>() {
             @Override
             public void decrement(int steps) {
-                timeIntervalTextField.getEditor().setText(String.valueOf(timeIntervalTextField.getValue()-1));
+                if(!"0".equals(timeIntervalTextField.getEditor().getText()))
+                    timeIntervalTextField.getEditor().setText(String.valueOf(Integer.parseInt(timeIntervalTextField.getEditor().getText())-1));
             }
 
             @Override
             public void increment(int steps) {
-                timeIntervalTextField.getEditor().setText(String.valueOf(timeIntervalTextField.getValue()+1));
+                timeIntervalTextField.getEditor().setText(String.valueOf(Integer.parseInt(timeIntervalTextField.getEditor().getText())+1));
             }
         });
         
@@ -100,7 +99,7 @@ public class MainAnchorPaneLayoutController implements Initializable {
             public void run() {
                 new EatDrinkHealthy().displayTray();
             }
-        }, loadTimer()*60000, calculateLeftHours()+calculateLeftMinute());
+        }, loadTimer()*60000, loadTimer()*60000);
     }
     
     private void cancelTimer(){
@@ -122,32 +121,5 @@ public class MainAnchorPaneLayoutController implements Initializable {
         else{
             return (int)userData.get("timerPeriod");
         }
-    }
-    
-    /**
-     * Calculate the Hours left in the day.
-     * for example if current time is 13:00, left hours is 24-13=11. so 11 is left hours till tomorrow.
-     * @return 
-     */
-    private int calculateLeftHours(){
-        Date date = new Date();
-        SimpleDateFormat hourDateFormat = new SimpleDateFormat("HH");
-        System.out.println(hourDateFormat.format(date));
-        int hour = 24 - Integer.valueOf(hourDateFormat.format(date));
-        hour = hour * 3600 * 1000;
-        return hour;
-    }
-    
-    /**
-     * Calculate the left minutes till next hour.
-     * for example if the time is 13:45, the method return 15. because of 60-45=15.
-     * @return 
-     */
-    private int calculateLeftMinute(){
-        Date date = new Date();
-        SimpleDateFormat minDateFormat = new SimpleDateFormat("mm");
-        int min = 60 - Integer.valueOf(minDateFormat.format(date));
-        min = min * 60 * 1000;
-        return min;
     }
 }
