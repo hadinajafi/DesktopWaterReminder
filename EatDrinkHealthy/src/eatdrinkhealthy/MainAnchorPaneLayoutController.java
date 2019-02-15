@@ -53,12 +53,14 @@ public class MainAnchorPaneLayoutController implements Initializable {
     private Button timeIntervalSaveBtn;
     
     private Map<String, Integer> userData;
+    private Timer timer;
     
     @FXML
     void saveApplyBtnAction(ActionEvent event) {
         userData.replace("timerPeriod", Integer.parseInt(timeIntervalTextField.getEditor().getText()));
         FileStreams stream = new FileStreams();
         stream.setData(userData);
+        stopTimer();
         startTimer();
     }
 
@@ -92,13 +94,21 @@ public class MainAnchorPaneLayoutController implements Initializable {
     }  
     
     private void startTimer(){
-        Timer timer = new Timer();
+        timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 new EatDrinkHealthy().displayTray();
             }
-        }, loadTimer(), calculateLeftHours()+calculateLeftMinute());
+        }, loadTimer()*60000, calculateLeftHours()+calculateLeftMinute());
+    }
+    
+    private void cancelTimer(){
+        timer.cancel();
+    }
+    
+    private void stopTimer(){
+        timer.purge();
     }
     
     private int loadTimer(){
