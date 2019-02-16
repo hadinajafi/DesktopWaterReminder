@@ -67,6 +67,17 @@ public class MainAnchorPaneLayoutController implements Initializable {
         userData.replace("timerPeriod", Integer.parseInt(timeIntervalTextField.getEditor().getText()));
         FileStreams stream = new FileStreams();
         stream.setData(userData);
+        startNewTimer();
+    }
+    
+    @FXML
+    void skipBtnAction(ActionEvent event) {
+        startNewTimer(); //skip button will just start new timers, nothing else
+    }
+    /**
+     * Cancel and purge all previous timers and create a new timer again.
+     */
+    private void startNewTimer(){
         counter.cancel();
         counter.purge();
         timer.cancel();
@@ -134,6 +145,9 @@ public class MainAnchorPaneLayoutController implements Initializable {
         }, 0, loadTimer() * 60000);
     }
 
+    /**
+     * Create internal counter to count down from period and show the countdown on the label.
+     */
     private void createCounterTimer() {
         counter = new Timer();
         counter.scheduleAtFixedRate(new TimerTask() {
@@ -206,7 +220,7 @@ public class MainAnchorPaneLayoutController implements Initializable {
      */
     private void displayNotification() {
         Platform.runLater(() -> {   //creating the FX thread
-            Notifications.create().title("Eat & Drink Healthy").text("Time to drink water Please!").graphic(new ImageView(new Image(getClass().getResourceAsStream("/icons/water2.png")))).hideAfter(Duration.seconds(10)).show();
+            Notifications.create().title("Eat & Drink Healthy").text("It's Time to drink Water!").graphic(new ImageView(new Image(getClass().getResourceAsStream("/icons/water2.png")))).hideAfter(Duration.seconds(10)).show();
         });
     }
 
