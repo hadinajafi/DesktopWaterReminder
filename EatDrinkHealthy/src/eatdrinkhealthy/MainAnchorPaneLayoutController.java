@@ -17,7 +17,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.PieChart.Data;
 import javafx.scene.control.Button;
@@ -27,11 +26,9 @@ import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 import org.controlsfx.control.Notifications;
-import sun.security.krb5.internal.rcache.AuthList;
 
 /**
  * FXML Controller class
@@ -56,11 +53,16 @@ public class MainAnchorPaneLayoutController implements Initializable {
     private Spinner<Integer> timeIntervalTextField; //Spinner to choose the notifications period
     @FXML
     private Button timeIntervalSaveBtn; //save the chosen notification period from the spinner and save it to file
+    @FXML
+    private Spinner<Integer> glassVolumeSpinner;
+    @FXML
+    private Button glassVolBtn;
 
     private Map<String, Integer> userData;  //user data such as notification period
     private Timer timer;    //timer to count down to display notification
     private Timer counter; //timer for showing counting down on the Timer label
     private boolean showMessage = false;
+    private DrinkDate drinkDate;
 
     @FXML
     void saveApplyBtnAction(ActionEvent event) {
@@ -95,6 +97,7 @@ public class MainAnchorPaneLayoutController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         userData = new HashMap<>();
+        drinkDate = new DrinkDate();
         tabPane.tabMinWidthProperty().bind(root.widthProperty().divide(tabPane.getTabs().size()).subtract(20.5));
         statPieChart.setTitle("How much you Drunk water today");
         ObservableList<Data> data = FXCollections.observableArrayList(new PieChart.Data("Water Drunken", 00.75), new PieChart.Data("Didn't Drink yet!", 00.25));
@@ -151,9 +154,9 @@ public class MainAnchorPaneLayoutController implements Initializable {
     private void createCounterTimer() {
         counter = new Timer();
         counter.scheduleAtFixedRate(new TimerTask() {
-            int minutes = loadTimer();
-            int seconds = 0;
-            int hour = minutes / 60;
+            int minutes = loadTimer();  //loading user data from the file.
+            int seconds = 0;    //user saved data by minutes, so second is 0.
+            int hour = minutes / 60;    //every hour is 60 minutes. because the data is saved by minutes in the file.
 
             @Override
             public void run() {
@@ -168,8 +171,8 @@ public class MainAnchorPaneLayoutController implements Initializable {
                 } else {
                     counter.cancel();
                 }
-                Platform.runLater(() -> {
-                    String hh, mm, ss;
+                Platform.runLater(() -> {   //running the FX thread
+                    String hh, mm, ss;  //these 3 strings used to show the counter in hh:mm:ss format
                     if(hour < 10){
                         hh = "0" + hour;
                     }else{
@@ -185,10 +188,10 @@ public class MainAnchorPaneLayoutController implements Initializable {
                     }else{
                         ss = String.valueOf(seconds);
                     }
-                    timecounterLable.setText(hh + ":" + mm + ":" + ss);
+                    timecounterLable.setText(hh + ":" + mm + ":" + ss); //hh:mm:ss format
                 });
             }
-        }, 0, 1000);
+        }, 0, 1000);    //timer will start from the start without delay and will count down every second (1000 milisec).
     }
 
     /**
@@ -201,12 +204,12 @@ public class MainAnchorPaneLayoutController implements Initializable {
     private int loadTimer() {
         FileStreams streams = new FileStreams();
         userData = streams.getData();
-        if (!userData.containsKey("timerPeriod") || userData.isEmpty()) {
-            userData.put("timerPeriod", 60);
-            streams.setData(userData);
+        if (!userData.containsKey("timerPeriod") || userData.isEmpty()) {   //if the user have no saved data, we use 60 minutes as default.
+            userData.put("timerPeriod", 60);    //putting default 60 minutes in the map variable.
+            streams.setData(userData);  //updating the saved file by streams object.
             return 60;
         } else {
-            return (int) userData.get("timerPeriod");
+            return (int) userData.get("timerPeriod");   //if the saved file and data exists, the saved data will return.
         }
     }
 
