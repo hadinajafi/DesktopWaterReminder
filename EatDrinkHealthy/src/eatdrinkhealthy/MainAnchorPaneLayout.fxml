@@ -63,8 +63,8 @@
                               <Label text="Time Interval (min) " />
                               <Spinner fx:id="timeIntervalTextField" editable="true" GridPane.columnIndex="1" />
                               <Button fx:id="timeIntervalSaveBtn" mnemonicParsing="false" onAction="#saveApplyBtnAction" text="Save &amp; Apply" GridPane.columnIndex="2" />
-                              <Spinner fx:id="glassVolumeSpinner" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <Button fx:id="glassVolBtn" mnemonicParsing="false" prefHeight="25.0" prefWidth="88.0" text="Save &amp; Apply" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                              <Spinner fx:id="glassVolumeSpinner" editable="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <Button fx:id="glassVolBtn" mnemonicParsing="false" onAction="#glassVolSaveBtn" prefHeight="25.0" prefWidth="88.0" text="Save &amp; Apply" GridPane.columnIndex="2" GridPane.rowIndex="1" />
                               <Label text="Your Glass Volume(CC)" GridPane.rowIndex="1" />
                            </children>
                         </GridPane>
