@@ -71,23 +71,24 @@ public class MainAnchorPaneLayoutController implements Initializable {
         stream.setData(userData);
         startNewTimer();
     }
-    
+
     @FXML
     void skipBtnAction(ActionEvent event) {
         startNewTimer(); //the skip button will just start new timers, nothing else
     }
-    
+
     @FXML
     void glassVolSaveBtn(ActionEvent event) {
         userData.replace("glassVol", Integer.parseInt(glassVolumeSpinner.getEditor().getText()));
         new FileStreams().setData(userData);
-        //TODO: updating the chart data by this new value
+        loadingChartData();
     }
-    
+
     /**
-     * Cancel and purge all previous timers and create a new timer again. Without showing notification.
+     * Cancel and purge all previous timers and create a new timer again.
+     * Without showing notification.
      */
-    private void startNewTimer(){
+    private void startNewTimer() {
         counter.cancel();
         counter.purge();
         timer.cancel();
@@ -108,17 +109,43 @@ public class MainAnchorPaneLayoutController implements Initializable {
         drinkDate = new DrinkDate();
         tabPane.tabMinWidthProperty().bind(root.widthProperty().divide(tabPane.getTabs().size()).subtract(20.5));
         statPieChart.setTitle("How much you Drunk water today");
-        ObservableList<Data> data = FXCollections.observableArrayList(new PieChart.Data("Water Drunken", 00.75), new PieChart.Data("Didn't Drink yet!", 00.25));
-        statPieChart.setData(data);
         //initializing the spinners value factory
         spinnersValueFactory();
         timeIntervalTextField.getEditor().setText(String.valueOf(loadTimer()));//load default or saved value to the spinner
-        createTimer();
+        createTimer(); //start the count down at start up
+        loadingChartData(); //load data to the chart
     }
 
-    private void spinnersValueFactory(){
+    /**
+     * Loading chart Data by 3 values, glass volume, drunk water times in the day and 2 liters water per day.
+     */
+    private void loadingChartData() {
+        userData = new FileStreams().getData(); //getting data from the saved file
+        int drinkTimes = 0; //default value in case of data missing
+        if(userData.containsKey(drinkDate.getToday()))  //checking for handle data missing: null pointer exception happened.
+            drinkTimes = userData.get(drinkDate.getToday());
+        else{                                           //add the default (0) value to the userData map and save it.
+            userData.put(drinkDate.getToday(), drinkTimes);
+            new FileStreams().setData(userData);
+        }
+        double drunkPerglass = 2 / (userData.get("glassVol")/1000.0);   //calculate the drunk glass volume by: 2 litrs is default value for every person needs to drink water each day. glass value is CC and divided by 1000 to convert to litrs.
+        double drunkWater = drinkTimes / drunkPerglass; //drunk water is drunk times divided by drinks per glass.
+        if(drunkWater <= 1.0 ){     //if data is not more than 1. because maybe someone drunk water more than 2 litrs.
+            ObservableList<Data> chartData = FXCollections.observableArrayList(new PieChart.Data("Water Drunken", drunkWater), new PieChart.Data("Didn't Drink yet!", 1.00 - drunkWater));
+            statPieChart.setData(chartData);
+        }
+        else{
+            ObservableList<Data> chartData = FXCollections.observableArrayList(new PieChart.Data("Water Drunken", 1.0));
+            statPieChart.setData(chartData);
+        }
+    }
+
+    /**
+     * Spinner value factory, defines each spinner value factory in the FXML file and add functionality to the increment and decrement.
+     */
+    private void spinnersValueFactory() {
         /*
-        Setting the value factory for the Spinner, increament and decreament works well and the minimum range is 0.
+        Setting the value factory for the Spinner, increment and decrement works well and the minimum range is 0.
          */
         timeIntervalTextField.setValueFactory(new SpinnerValueFactory<Integer>() {
             @Override
@@ -133,7 +160,7 @@ public class MainAnchorPaneLayoutController implements Initializable {
                 timeIntervalTextField.getEditor().setText(String.valueOf(Integer.parseInt(timeIntervalTextField.getEditor().getText()) + 1));
             }
         });
-        
+
         glassVolumeSpinner.setValueFactory(new SpinnerValueFactory<Integer>() {
             @Override
             public void decrement(int steps) {
@@ -146,7 +173,7 @@ public class MainAnchorPaneLayoutController implements Initializable {
             }
         });
     }
-    
+
     /**
      * <b>Create Period Timer</b><br>
      * Start the timer for showing notifications periodically. loadTimer()
@@ -173,7 +200,8 @@ public class MainAnchorPaneLayoutController implements Initializable {
     }
 
     /**
-     * Create internal counter to count down from period and show the countdown on the label.
+     * Create internal counter to count down from period and show the countdown
+     * on the label.
      */
     private void createCounterTimer() {
         counter = new Timer();
@@ -197,19 +225,19 @@ public class MainAnchorPaneLayoutController implements Initializable {
                 }
                 Platform.runLater(() -> {   //running the FX thread
                     String hh, mm, ss;  //these 3 strings used to show the counter in hh:mm:ss format
-                    if(hour < 10){
+                    if (hour < 10) {
                         hh = "0" + hour;
-                    }else{
+                    } else {
                         hh = String.valueOf(hour);
                     }
-                    if(minutes < 10){
+                    if (minutes < 10) {
                         mm = "0" + minutes;
-                    }else{
+                    } else {
                         mm = String.valueOf(minutes);
                     }
-                    if(seconds < 10){
+                    if (seconds < 10) {
                         ss = "0" + seconds;
-                    }else{
+                    } else {
                         ss = String.valueOf(seconds);
                     }
                     timecounterLable.setText(hh + ":" + mm + ":" + ss); //hh:mm:ss format
@@ -255,12 +283,15 @@ public class MainAnchorPaneLayoutController implements Initializable {
         Platform.runLater(() -> {   //creating the FX thread
             Notifications.create().title("Eat & Drink Healthy").text("It's Time to drink Water!").graphic(new ImageView(new Image(getClass().getResourceAsStream("/icons/water2.png")))).hideAfter(Duration.seconds(10)).show();
             int drinkTimes = userData.get(drinkDate.getToday()) + 1;
-            if(userData.containsKey(drinkDate.getToday()))  //if any notifications showed to the user, so there is data
+            if (userData.containsKey(drinkDate.getToday())) //if any notifications showed to the user, so there is data
+            {
                 userData.replace(drinkDate.getToday(), drinkTimes);
-            else{   //unless if user haven't any data about today drink times.
+            } else {   //unless if user haven't any data about today drink times.
                 userData.put(drinkDate.getToday(), 1);  //putting 1 because it is the first drink water for today.
             }
             new FileStreams().setData(userData);    //saving the data.
+            //updating the chart
+            loadingChartData();
         });
     }
 
