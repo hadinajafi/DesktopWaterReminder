@@ -74,10 +74,18 @@ public class MainAnchorPaneLayoutController implements Initializable {
     
     @FXML
     void skipBtnAction(ActionEvent event) {
-        startNewTimer(); //skip button will just start new timers, nothing else
+        startNewTimer(); //the skip button will just start new timers, nothing else
     }
+    
+    @FXML
+    void glassVolSaveBtn(ActionEvent event) {
+        userData.replace("glassVol", Integer.parseInt(glassVolumeSpinner.getEditor().getText()));
+        new FileStreams().setData(userData);
+        //TODO: updating the chart data by this new value
+    }
+    
     /**
-     * Cancel and purge all previous timers and create a new timer again.
+     * Cancel and purge all previous timers and create a new timer again. Without showing notification.
      */
     private void startNewTimer(){
         counter.cancel();
@@ -102,6 +110,13 @@ public class MainAnchorPaneLayoutController implements Initializable {
         statPieChart.setTitle("How much you Drunk water today");
         ObservableList<Data> data = FXCollections.observableArrayList(new PieChart.Data("Water Drunken", 00.75), new PieChart.Data("Didn't Drink yet!", 00.25));
         statPieChart.setData(data);
+        //initializing the spinners value factory
+        spinnersValueFactory();
+        timeIntervalTextField.getEditor().setText(String.valueOf(loadTimer()));//load default or saved value to the spinner
+        createTimer();
+    }
+
+    private void spinnersValueFactory(){
         /*
         Setting the value factory for the Spinner, increament and decreament works well and the minimum range is 0.
          */
@@ -118,11 +133,20 @@ public class MainAnchorPaneLayoutController implements Initializable {
                 timeIntervalTextField.getEditor().setText(String.valueOf(Integer.parseInt(timeIntervalTextField.getEditor().getText()) + 1));
             }
         });
+        
+        glassVolumeSpinner.setValueFactory(new SpinnerValueFactory<Integer>() {
+            @Override
+            public void decrement(int steps) {
+                glassVolumeSpinner.getEditor().setText(String.valueOf(Integer.parseInt(glassVolumeSpinner.getEditor().getText()) - 1));
+            }
 
-        timeIntervalTextField.getEditor().setText(String.valueOf(loadTimer()));//load default or saved value to the spinner
-        createTimer();
+            @Override
+            public void increment(int steps) {
+                glassVolumeSpinner.getEditor().setText(String.valueOf(Integer.parseInt(glassVolumeSpinner.getEditor().getText()) + 1));
+            }
+        });
     }
-
+    
     /**
      * <b>Create Period Timer</b><br>
      * Start the timer for showing notifications periodically. loadTimer()
@@ -191,7 +215,7 @@ public class MainAnchorPaneLayoutController implements Initializable {
                     timecounterLable.setText(hh + ":" + mm + ":" + ss); //hh:mm:ss format
                 });
             }
-        }, 0, 1000);    //timer will start from the start without delay and will count down every second (1000 milisec).
+        }, 0, 1000);    //timer will start without delay and will count down every second (1000 milisec).
     }
 
     /**
@@ -206,9 +230,15 @@ public class MainAnchorPaneLayoutController implements Initializable {
         userData = streams.getData();
         if (!userData.containsKey("timerPeriod") || userData.isEmpty()) {   //if the user have no saved data, we use 60 minutes as default.
             userData.put("timerPeriod", 60);    //putting default 60 minutes in the map variable.
-            streams.setData(userData);  //updating the saved file by streams object.
+            //logic is if the user haven't any timer period data, so there is no drink times data too.
+            userData.put(drinkDate.getToday(), 0);  //putting default 0 times drinks for today.
+            //adding glass capacity. user can change it. data is by CC.
+            userData.put("glassVol", 250);
+            glassVolumeSpinner.getEditor().setText(String.valueOf(userData.get("glassVol")));
+            streams.setData(userData);  //updating and save data.
             return 60;
         } else {
+            glassVolumeSpinner.getEditor().setText(String.valueOf(userData.get("glassVol")));
             return (int) userData.get("timerPeriod");   //if the saved file and data exists, the saved data will return.
         }
     }
@@ -224,6 +254,13 @@ public class MainAnchorPaneLayoutController implements Initializable {
     private void displayNotification() {
         Platform.runLater(() -> {   //creating the FX thread
             Notifications.create().title("Eat & Drink Healthy").text("It's Time to drink Water!").graphic(new ImageView(new Image(getClass().getResourceAsStream("/icons/water2.png")))).hideAfter(Duration.seconds(10)).show();
+            int drinkTimes = userData.get(drinkDate.getToday()) + 1;
+            if(userData.containsKey(drinkDate.getToday()))  //if any notifications showed to the user, so there is data
+                userData.replace(drinkDate.getToday(), drinkTimes);
+            else{   //unless if user haven't any data about today drink times.
+                userData.put(drinkDate.getToday(), 1);  //putting 1 because it is the first drink water for today.
+            }
+            new FileStreams().setData(userData);    //saving the data.
         });
     }
 
