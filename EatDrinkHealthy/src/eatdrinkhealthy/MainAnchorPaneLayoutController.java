@@ -117,31 +117,33 @@ public class MainAnchorPaneLayoutController implements Initializable {
     }
 
     /**
-     * Loading chart Data by 3 values, glass volume, drunk water times in the day and 2 liters water per day.
+     * Loading chart Data by 3 values, glass volume, drunk water times in the
+     * day and 2 liters water per day.
      */
     private void loadingChartData() {
         userData = new FileStreams().getData(); //getting data from the saved file
         int drinkTimes = 0; //default value in case of data missing
-        if(userData.containsKey(drinkDate.getToday()))  //checking for handle data missing: null pointer exception happened.
+        if (userData.containsKey(drinkDate.getToday())) //checking for handle data missing: null pointer exception happened.
+        {
             drinkTimes = userData.get(drinkDate.getToday());
-        else{                                           //add the default (0) value to the userData map and save it.
+        } else {                                           //add the default (0) value to the userData map and save it.
             userData.put(drinkDate.getToday(), drinkTimes);
             new FileStreams().setData(userData);
         }
-        double drunkPerglass = 2 / (userData.get("glassVol")/1000.0);   //calculate the drunk glass volume by: 2 litrs is default value for every person needs to drink water each day. glass value is CC and divided by 1000 to convert to litrs.
+        double drunkPerglass = 2 / (userData.get("glassVol") / 1000.0);   //calculate the drunk glass volume by: 2 litrs is default value for every person needs to drink water each day. glass value is CC and divided by 1000 to convert to litrs.
         double drunkWater = drinkTimes / drunkPerglass; //drunk water is drunk times divided by drinks per glass.
-        if(drunkWater <= 1.0 ){     //if data is not more than 1. because maybe someone drunk water more than 2 litrs.
+        if (drunkWater <= 1.0) {     //if data is not more than 1. because maybe someone drunk water more than 2 litrs.
             ObservableList<Data> chartData = FXCollections.observableArrayList(new PieChart.Data("Water Drunken", drunkWater), new PieChart.Data("Didn't Drink yet!", 1.00 - drunkWater));
             statPieChart.setData(chartData);
-        }
-        else{
+        } else {
             ObservableList<Data> chartData = FXCollections.observableArrayList(new PieChart.Data("Water Drunken", 1.0));
             statPieChart.setData(chartData);
         }
     }
 
     /**
-     * Spinner value factory, defines each spinner value factory in the FXML file and add functionality to the increment and decrement.
+     * Spinner value factory, defines each spinner value factory in the FXML
+     * file and add functionality to the increment and decrement.
      */
     private void spinnersValueFactory() {
         /*
@@ -207,20 +209,38 @@ public class MainAnchorPaneLayoutController implements Initializable {
         counter = new Timer();
         counter.scheduleAtFixedRate(new TimerTask() {
             int minutes = loadTimer();  //loading user data from the file.
-            int seconds = 0;    //user saved data by minutes, so second is 0.
+            int seconds = 60;    //user saved data by minutes, so second is 0.
             int hour = minutes / 60;    //every hour is 60 minutes. because the data is saved by minutes in the file.
 
             @Override
             public void run() {
-                if (hour > 0 && minutes == 0) {
+                if(hour > 0 && (minutes%60==0) && minutes >= 60){
                     hour--;
-                    minutes += 59;
-                } else if (minutes > 0 && seconds == 0) {
+                    minutes = minutes - hour*60;
                     minutes--;
-                    seconds += 59;
-                } else if (seconds > 0) {
+                }
+                else if(hour > 0 && ((minutes/60) >= 1)){
+                    minutes = minutes%60;
+                    minutes--;
+                }
+                else if(seconds > 0){
                     seconds--;
-                } else {
+                }
+                else if(seconds == 0 && minutes > 0){
+                    minutes--;
+                    seconds=60;
+                }
+                else if(minutes == 0 && seconds == 0 && hour > 0){
+                    hour--;
+                    minutes=59;
+                    seconds=60;
+                }
+                else if(minutes == 0 && seconds == 0){
+                    minutes = 59;
+                    seconds = 59;
+                }
+                
+                else {
                     counter.cancel();
                 }
                 Platform.runLater(() -> {   //running the FX thread
