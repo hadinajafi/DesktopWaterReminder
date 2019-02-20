@@ -75,6 +75,8 @@ public class MainAnchorPaneLayoutController implements Initializable {
     @FXML
     void skipBtnAction(ActionEvent event) {
         startNewTimer(); //the skip button will just start new timers, nothing else
+        increaseWaterDrinkTimes();
+        loadingChartData();
     }
 
     @FXML
@@ -132,7 +134,7 @@ public class MainAnchorPaneLayoutController implements Initializable {
         }
         double drunkPerglass = 2 / (userData.get("glassVol") / 1000.0);   //calculate the drunk glass volume by: 2 litrs is default value for every person needs to drink water each day. glass value is CC and divided by 1000 to convert to litrs.
         double drunkWater = drinkTimes / drunkPerglass; //drunk water is drunk times divided by drinks per glass.
-        if (drunkWater <= 1.0) {     //if data is not more than 1. because maybe someone drunk water more than 2 litrs.
+        if (drunkWater <= 1.0) {     //if data is not more than 100% percentage. because maybe someone drunk water more than 2 litrs.
             ObservableList<Data> chartData = FXCollections.observableArrayList(new PieChart.Data("Water Drunken", drunkWater), new PieChart.Data("Didn't Drink yet!", 1.00 - drunkWater));
             statPieChart.setData(chartData);
         } else {
@@ -302,7 +304,16 @@ public class MainAnchorPaneLayoutController implements Initializable {
     private void displayNotification() {
         Platform.runLater(() -> {   //creating the FX thread
             Notifications.create().title("Eat & Drink Healthy").text("It's Time to drink Water!").graphic(new ImageView(new Image(getClass().getResourceAsStream("/icons/water2.png")))).hideAfter(Duration.seconds(10)).show();
-            int drinkTimes = userData.get(drinkDate.getToday()) + 1;
+            increaseWaterDrinkTimes();
+            //updating the chart
+            loadingChartData();
+        });
+    }
+    /**
+     * increase the water drunken times by one, when notification showed up or skip button pressed. data will save immediately in the user file.
+     */
+    private void increaseWaterDrinkTimes(){
+        int drinkTimes = userData.get(drinkDate.getToday()) + 1;
             if (userData.containsKey(drinkDate.getToday())) //if any notifications showed to the user, so there is data
             {
                 userData.replace(drinkDate.getToday(), drinkTimes);
@@ -310,9 +321,6 @@ public class MainAnchorPaneLayoutController implements Initializable {
                 userData.put(drinkDate.getToday(), 1);  //putting 1 because it is the first drink water for today.
             }
             new FileStreams().setData(userData);    //saving the data.
-            //updating the chart
-            loadingChartData();
-        });
     }
 
 }
