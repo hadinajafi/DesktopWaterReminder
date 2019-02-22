@@ -211,37 +211,28 @@ public class MainAnchorPaneLayoutController implements Initializable {
         counter = new Timer();
         counter.scheduleAtFixedRate(new TimerTask() {
             int minutes = loadTimer();  //loading user data from the file.
-            int seconds = 59;    //user saved data by minutes, so second is 0.
+            int seconds = 0;    //user saved data by minutes, so second is 0.
             int hour = minutes / 60;    //every hour is 60 minutes. because the data is saved by minutes in the file.
 
             @Override
             public void run() {
-                if(hour > 0 && (minutes%60==0) && minutes >= 60){
-                    hour--;
-                    minutes = minutes - hour*60;
-                    minutes--;
+                
+                if(hour > 0 && minutes >= 60){
+                    if(minutes >= 60)
+                        minutes = minutes-(hour)*60;
+                    if(minutes == 0){
+                        hour--;
+                        minutes = 59;
+                        seconds=59;
+                    }
                 }
-                else if(hour > 0 && ((minutes/60) >= 1)){
-                    minutes = minutes%60;
+                else if(seconds == 0 && minutes > 0){
+                    seconds = 59;
                     minutes--;
                 }
                 else if(seconds > 0){
                     seconds--;
                 }
-                else if(seconds == 0 && minutes > 0){
-                    minutes--;
-                    seconds=59;
-                }
-                else if(minutes == 0 && seconds == 0 && hour > 0){
-                    hour--;
-                    minutes=59;
-                    seconds=59;
-                }
-                else if(minutes == 0 && seconds == 0){
-                    minutes = 59;
-                    seconds = 59;
-                }
-                
                 else {
                     counter.cancel();
                 }
