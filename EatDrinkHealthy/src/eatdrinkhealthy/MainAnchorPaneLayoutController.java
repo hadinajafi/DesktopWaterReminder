@@ -11,10 +11,12 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.UnaryOperator;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.PieChart;
@@ -24,10 +26,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
+import javafx.util.StringConverter;
+import javafx.util.converter.IntegerStringConverter;
 import org.controlsfx.control.Notifications;
 
 /**
@@ -66,6 +72,9 @@ public class MainAnchorPaneLayoutController implements Initializable {
 
     @FXML
     void saveApplyBtnAction(ActionEvent event) {
+        if (timeIntervalTextField.getEditor().getText() == null || timeIntervalTextField.getEditor().getText().equals("") || timeIntervalTextField.getEditor().getText().equals("0")) {
+            timeIntervalTextField.getEditor().setText("60");
+        }
         userData.replace("timerPeriod", Integer.parseInt(timeIntervalTextField.getEditor().getText()));
         FileStreams stream = new FileStreams();
         stream.setData(userData);
@@ -81,6 +90,9 @@ public class MainAnchorPaneLayoutController implements Initializable {
 
     @FXML
     void glassVolSaveBtn(ActionEvent event) {
+        if (glassVolumeSpinner.getEditor().getText() == null || glassVolumeSpinner.getEditor().getText().equals("") || glassVolumeSpinner.getEditor().getText().equals("0")) {
+            glassVolumeSpinner.getEditor().setText("250");
+        }
         userData.replace("glassVol", Integer.parseInt(glassVolumeSpinner.getEditor().getText()));
         new FileStreams().setData(userData);
         loadingChartData();
@@ -148,6 +160,23 @@ public class MainAnchorPaneLayoutController implements Initializable {
      * file and add functionality to the increment and decrement.
      */
     private void spinnersValueFactory() {
+
+        /*
+        Adding text formatter with regular expression to accept only numbers for the spinners.
+         */
+        //filter and regular expression:
+        UnaryOperator<TextFormatter.Change> filter = change -> {
+            String text = change.getControlNewText();
+            if (text.matches("[0-9]*")) {
+                return change;
+            }
+            return null;
+        };
+
+        //set the filter to the spinners:
+        timeIntervalTextField.getEditor().setTextFormatter(new TextFormatter<>(filter));
+        glassVolumeSpinner.getEditor().setTextFormatter(new TextFormatter<>(filter));
+
         /*
         Setting the value factory for the Spinner, increment and decrement works well and the minimum range is 0.
          */
@@ -216,24 +245,22 @@ public class MainAnchorPaneLayoutController implements Initializable {
 
             @Override
             public void run() {
-                
-                if(hour > 0 && minutes >= 60){
-                    if(minutes >= 60)
-                        minutes = minutes-(hour)*60;
-                    if(minutes == 0){
+
+                if (hour > 0 && minutes >= 60) {
+                    if (minutes >= 60) {
+                        minutes = minutes - (hour) * 60;
+                    }
+                    if (minutes == 0) {
                         hour--;
                         minutes = 59;
-                        seconds=59;
+                        seconds = 59;
                     }
-                }
-                else if(seconds == 0 && minutes > 0){
+                } else if (seconds == 0 && minutes > 0) {
                     seconds = 59;
                     minutes--;
-                }
-                else if(seconds > 0){
+                } else if (seconds > 0) {
                     seconds--;
-                }
-                else {
+                } else {
                     counter.cancel();
                 }
                 Platform.runLater(() -> {   //running the FX thread
@@ -300,18 +327,20 @@ public class MainAnchorPaneLayoutController implements Initializable {
             loadingChartData();
         });
     }
+
     /**
-     * increase the water drunken times by one, when notification showed up or skip button pressed. data will save immediately in the user file.
+     * increase the water drunken times by one, when notification showed up or
+     * skip button pressed. data will save immediately in the user file.
      */
-    private void increaseWaterDrinkTimes(){
+    private void increaseWaterDrinkTimes() {
         int drinkTimes = userData.get(drinkDate.getToday()) + 1;
-            if (userData.containsKey(drinkDate.getToday())) //if any notifications showed to the user, so there is data
-            {
-                userData.replace(drinkDate.getToday(), drinkTimes);
-            } else {   //unless if user haven't any data about today drink times.
-                userData.put(drinkDate.getToday(), 1);  //putting 1 because it is the first drink water for today.
-            }
-            new FileStreams().setData(userData);    //saving the data.
+        if (userData.containsKey(drinkDate.getToday())) //if any notifications showed to the user, so there is data
+        {
+            userData.replace(drinkDate.getToday(), drinkTimes);
+        } else {   //unless if user haven't any data about today drink times.
+            userData.put(drinkDate.getToday(), 1);  //putting 1 because it is the first drink water for today.
+        }
+        new FileStreams().setData(userData);    //saving the data.
     }
 
 }
