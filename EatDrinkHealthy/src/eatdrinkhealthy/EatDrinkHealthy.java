@@ -45,7 +45,7 @@ public class EatDrinkHealthy extends Application {
             scene.getStylesheets().add(getClass().getResource("mainanchorpanelayout.css").toExternalForm());
             this.primaryStage.setTitle("Eat & Drink Healthy");
             this.primaryStage.setResizable(false);
-            this.primaryStage.getIcons().add(new javafx.scene.image.Image("/icons/glass_48.png"));
+            this.primaryStage.getIcons().add(new javafx.scene.image.Image("/icons/glass_128.png"));
             this.primaryStage.setScene(scene);
             this.primaryStage.show();
             Platform.setImplicitExit(false);
