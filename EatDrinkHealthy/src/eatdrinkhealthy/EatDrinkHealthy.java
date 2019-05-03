@@ -80,48 +80,53 @@ public class EatDrinkHealthy extends Application {
         exitBtn.addActionListener((java.awt.event.ActionEvent e) -> {
             System.exit(0);
         });
-        SystemTray tray = SystemTray.getSystemTray();
-        Image imageIcon = null;
-        try {
-            imageIcon = ImageIO.read(getClass().getResource("/icons/glass_48.png"));
-        } catch (IOException ex) {
-            System.err.println(ex.getMessage());
-        }
-        TrayIcon icon = new TrayIcon(imageIcon, "Drink Water", trayMenu);
-        icon.setToolTip("Eat & Drink Healthy");
-        
-        MouseAdapter trayIconMouseAdapter = new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                try {
-                    if (e.getButton() == MouseEvent.BUTTON3) {
-                        trayMenu.show(e.getComponent(), e.getX(), e.getY());
-                    } else if (e.getButton() == 1) {
-                        if (!primaryStage.isShowing()) {
-                            Platform.runLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    primaryStage.show();
-                                }
-                            });
-                        }
-                    }
-                } catch (IllegalArgumentException | NullPointerException ex) {
-                    System.err.println(ex.getMessage());
-                }
-            }
+        //check if the system supports tray icon
+        if (SystemTray.isSupported()) {
+            SystemTray tray = SystemTray.getSystemTray();
 
-        };
-        
-        icon.addMouseListener(trayIconMouseAdapter);
-        icon.setImageAutoSize(true);
-        try {
-            if(firstTray){
-                tray.add(icon);
-                firstTray = false;
+            Image imageIcon = null;
+            try {
+                imageIcon = ImageIO.read(getClass().getResource("/icons/glass_48.png"));
+            } catch (IOException ex) {
+                System.err.println(ex.getMessage());
+                System.out.println("Can't find the image for tray!");
             }
-        } catch (AWTException ex) {
-            System.err.println(ex.getMessage());
+            TrayIcon icon = new TrayIcon(imageIcon, "Drink Water", trayMenu);
+            icon.setToolTip("Eat & Drink Healthy");
+
+            MouseAdapter trayIconMouseAdapter = new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    try {
+                        if (e.getButton() == MouseEvent.BUTTON3) {
+                            trayMenu.show(e.getComponent(), e.getX(), e.getY());
+                        } else if (e.getButton() == 1) {
+                            if (!primaryStage.isShowing()) {
+                                Platform.runLater(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        primaryStage.show();
+                                    }
+                                });
+                            }
+                        }
+                    } catch (IllegalArgumentException | NullPointerException ex) {
+                        System.err.println(ex.getMessage());
+                    }
+                }
+
+            };
+
+            icon.addMouseListener(trayIconMouseAdapter);
+            icon.setImageAutoSize(true);
+            try {
+                if (firstTray) {
+                    tray.add(icon);
+                    firstTray = false;
+                }
+            } catch (AWTException ex) {
+                System.err.println(ex.getMessage());
+            }
         }
     }
 }
