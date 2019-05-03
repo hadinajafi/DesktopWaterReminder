@@ -16,7 +16,6 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.PieChart;
@@ -29,11 +28,8 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
-import javafx.util.StringConverter;
-import javafx.util.converter.IntegerStringConverter;
 import org.controlsfx.control.Notifications;
 
 /**
@@ -121,7 +117,7 @@ public class MainAnchorPaneLayoutController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         userData = new HashMap<>();
         drinkDate = new DrinkDate();
-        tabPane.tabMinWidthProperty().bind(root.widthProperty().divide(tabPane.getTabs().size()).subtract(20.5));
+        tabPane.tabMinWidthProperty().bind(root.widthProperty().divide(tabPane.getTabs().size()).subtract(25));
         statPieChart.setTitle("How much you Drunk water today");
         //initializing the spinners value factory
         spinnersValueFactory();
