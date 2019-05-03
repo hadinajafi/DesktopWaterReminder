@@ -34,7 +34,7 @@
                               <RowConstraints maxHeight="283.0" minHeight="10.0" prefHeight="283.0" valignment="TOP" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
-                              <Label text="Next Notification" />
+                              <Label text="Next Notify" />
                               <Label fx:id="timecounterLable" text="Time counter" GridPane.columnIndex="1" />
                               <Button fx:id="skipButton" mnemonicParsing="false" onAction="#skipBtnAction" prefHeight="25.0" prefWidth="73.0" text="Skip" GridPane.columnIndex="2" />
                               <Label text="Stats " GridPane.rowIndex="1" />
@@ -64,7 +64,7 @@
                               <Spinner fx:id="timeIntervalTextField" editable="true" GridPane.columnIndex="1" />
                               <Button fx:id="timeIntervalSaveBtn" mnemonicParsing="false" onAction="#saveApplyBtnAction" text="Save &amp; Apply" GridPane.columnIndex="2" />
                               <Spinner fx:id="glassVolumeSpinner" editable="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <Button fx:id="glassVolBtn" mnemonicParsing="false" onAction="#glassVolSaveBtn" prefHeight="26.0" prefWidth="106.0" text="Save &amp; Apply" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                              <Button fx:id="glassVolBtn" mnemonicParsing="false" onAction="#glassVolSaveBtn" text="Save &amp; Apply" GridPane.columnIndex="2" GridPane.rowIndex="1" />
                               <Label text="Your Glass Volume(CC)" GridPane.rowIndex="1" />
                            </children>
                         </GridPane>
