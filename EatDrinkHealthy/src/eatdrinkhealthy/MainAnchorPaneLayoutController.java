@@ -228,55 +228,72 @@ public class MainAnchorPaneLayoutController implements Initializable {
         }, 0, loadTimer() * 60000);
     }
 
+    
+    /*
+    Example for how to understand the variables:
+    
+    seconds is 36000
+    loadedMinutes = minute = 60
+    secondFormatted is 60->59
+    minute is 60->59
+    hour is 0
+    formatted minute is 60->59
+    
+    >>> second--, second--
+    
+    seconds is 35998
+    second formatted is 58
+    hour is 0
+    minute is 59
+    minute formatted is 59
+    
+    */
+    
     /**
      * Create internal counter to count down from period and show the countdown
      * on the label.
      */
     private void createCounterTimer() {
+        final int loadedMinutes = loadTimer();  //loading user data from the file.
         counter = new Timer();
+        
         counter.scheduleAtFixedRate(new TimerTask() {
-            int minutes = loadTimer();  //loading user data from the file.
-            int seconds = 0;    //user saved data by minutes, so second is 0.
-            int hour = minutes / 60;    //every hour is 60 minutes. because the data is saved by minutes in the file.
+            int seconds = loadedMinutes * 60;   //for calculating whole seconds in the saved file, used for countdown. e.g.: 60 minutes is 3600 seconds, but I don't wanna countdown from 3600.
+            int hour = loadedMinutes/60;    //calculated hour value from minutes. used for timer lable too.
+            int secondFormatted = 0;    //formatted second, it is from 0 to 59
+            int minute = seconds/60;    //minute is calculated minute from seconds. like loadedMinutes. it is from 0 to infinite.
+            int minuteFormatted = loadedMinutes - hour * 60;    //formatted minute used in timer label: from 0 to 59
+            String secString, minString, hourString;    //formatted strings to show in timer label
 
             @Override
             public void run() {
-
-                if (hour > 0 && minutes >= 60) {
-                    if (minutes >= 60) {
-                        minutes = minutes - (hour) * 60;
-                    }
-                    if (minutes == 0) {
-                        hour--;
-                        minutes = 59;
-                        seconds = 59;
-                    }
-                } else if (seconds == 0 && minutes > 0) {
-                    seconds = 59;
-                    minutes--;
-                } else if (seconds > 0) {
-                    seconds--;
-                } else {
-                    counter.cancel();
-                }
                 Platform.runLater(() -> {   //running the FX thread
-                    String hh, mm, ss;  //these 3 strings used to show the counter in hh:mm:ss format
-                    if (hour < 10) {
-                        hh = "0" + hour;
-                    } else {
-                        hh = String.valueOf(hour);
+                    if(secondFormatted < 10)    //setting "ss" format, like 00, 01, 02, ..., 09
+                        secString = "0" + secondFormatted;
+                    else
+                        secString = String.valueOf(secondFormatted);
+                    if(minuteFormatted < 10)    //setting "mm" format, like 00, 01, 02, ..., 09
+                        minString = "0" + minuteFormatted;
+                    else
+                        minString = String.valueOf(minuteFormatted);
+                    if(hour < 10)   //setting "hh" format, like 00, 01, 02, ..., 09
+                        hourString = "0" + hour;
+                    else
+                        hourString = String.valueOf(hour);
+                    timecounterLable.setText(hourString + ":" + minString + ":" + secString);
+                    
+                    seconds--;  //using the whole seconds to countdown.
+                    hour = minute / 60;
+                    minute = seconds/60;
+                    secondFormatted = seconds - minute*60;
+                    minuteFormatted = minute - hour*60;
+                    if(minuteFormatted < 0){
+                        if(hour >= 0)
+                            hour--;
+                        minuteFormatted = minute - hour*60;
                     }
-                    if (minutes < 10) {
-                        mm = "0" + minutes;
-                    } else {
-                        mm = String.valueOf(minutes);
-                    }
-                    if (seconds < 10) {
-                        ss = "0" + seconds;
-                    } else {
-                        ss = String.valueOf(seconds);
-                    }
-                    timecounterLable.setText(hh + ":" + mm + ":" + ss); //hh:mm:ss format
+                    if(seconds < 0)
+                        timer.cancel();
                 });
             }
         }, 0, 1000);    //timer will start without delay and will count down every second (1000 milisec).
