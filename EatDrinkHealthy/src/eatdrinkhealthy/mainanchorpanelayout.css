@@ -1,0 +1,10 @@
+/*
+ * Empty Stylesheet file.
+ */
+
+.mainFxmlClass {
+
+}
+
+.data0.chart-pie { -fx-pie-color: #009999; }
+.data1.chart-pie { -fx-pie-color: #ffa500; }
