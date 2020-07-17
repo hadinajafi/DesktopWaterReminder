@@ -6,3 +6,5 @@ Download the .Zip file from release section, unzip and make sure you have jdk 1.
 
 Hint: _this project did not tested with newer versions of Java and JavaFX._<br>
 place the "lib" folder alongside .JAR file. librareis used in this project needed to run.
+
+Linux desktop launcher is also included. place the .desktop file in ~/.local/share/Applications, then it will show up on the application menu of your system.
