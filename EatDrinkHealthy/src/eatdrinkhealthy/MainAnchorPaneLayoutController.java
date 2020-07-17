@@ -66,6 +66,11 @@ public class MainAnchorPaneLayoutController implements Initializable {
     private boolean showMessage = false;
     private DrinkDate drinkDate;
 
+    /**
+     * 
+     * @param event Action event on this button
+     * Save user data such as time interval value on the file.
+     */
     @FXML
     void saveApplyBtnAction(ActionEvent event) {
         if (timeIntervalTextField.getEditor().getText() == null || timeIntervalTextField.getEditor().getText().equals("") || timeIntervalTextField.getEditor().getText().equals("0")) {
@@ -77,6 +82,11 @@ public class MainAnchorPaneLayoutController implements Initializable {
         startNewTimer();
     }
 
+    /**
+     * 
+     * @param event Action that will execute on this button
+     * Reset the timer and adds +1 step to the water progress.
+     */
     @FXML
     void skipBtnAction(ActionEvent event) {
         startNewTimer(); //the skip button will just start new timers, nothing else
@@ -84,6 +94,12 @@ public class MainAnchorPaneLayoutController implements Initializable {
         loadingChartData();
     }
 
+    /**
+     * 
+     * @param event Action that will execute on this button
+     * Save glass volume on the file and verify its value, otherwise default value will save.
+     * Process ends on writing the value on the file.
+     */
     @FXML
     void glassVolSaveBtn(ActionEvent event) {
         if (glassVolumeSpinner.getEditor().getText() == null || glassVolumeSpinner.getEditor().getText().equals("") || glassVolumeSpinner.getEditor().getText().equals("0")) {
