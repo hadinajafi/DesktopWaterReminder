@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eatdrinkhealthy;
 
 import java.awt.AWTException;
@@ -27,7 +22,7 @@ import javax.imageio.ImageIO;
 
 /**
  *
- * @author hadin
+ * @author Hadi Najafi
  */
 public class EatDrinkHealthy extends Application {
 
@@ -49,16 +44,14 @@ public class EatDrinkHealthy extends Application {
             this.primaryStage.setScene(scene);
             this.primaryStage.show();
             Platform.setImplicitExit(false);
-            primaryStage.setOnCloseRequest((WindowEvent event) -> {
-                Platform.runLater(() -> {
-                    if (SystemTray.isSupported()) {
-                        primaryStage.hide();
-                        displayTray();
-                    } else {
-                        System.exit(0);
-                    }
-                });
-            });
+            primaryStage.setOnCloseRequest((WindowEvent event) -> Platform.runLater(() -> {
+                if (SystemTray.isSupported()) {
+                    primaryStage.hide();
+                    displayTray();
+                } else {
+                    System.exit(0);
+                }
+            }));
         } catch (IOException ex) {
             Logger.getLogger(EatDrinkHealthy.class.getName()).log(Level.SEVERE, null, ex);
             System.err.println(ex.getMessage());
@@ -77,23 +70,21 @@ public class EatDrinkHealthy extends Application {
         PopupMenu trayMenu = new PopupMenu("Menu");
         MenuItem exitBtn = new MenuItem("Exit");
         trayMenu.add(exitBtn);
-        exitBtn.addActionListener((java.awt.event.ActionEvent e) -> {
-            System.exit(0);
-        });
+        exitBtn.addActionListener((java.awt.event.ActionEvent e) -> System.exit(0));
         //check if the system supports tray icon
         if (SystemTray.isSupported()) {
             SystemTray tray = SystemTray.getSystemTray();
 
-            Image imageIcon = null;
+            Image imageIcon;
+            TrayIcon icon = null;
             try {
                 imageIcon = ImageIO.read(getClass().getResource("/icons/glass_48.png"));
+                icon = new TrayIcon(imageIcon, "Drink Water", trayMenu);
+                icon.setToolTip("Eat & Drink Healthy");
             } catch (IOException ex) {
                 System.err.println(ex.getMessage());
                 System.out.println("Can't find the image for tray!");
             }
-            TrayIcon icon = new TrayIcon(imageIcon, "Drink Water", trayMenu);
-            icon.setToolTip("Eat & Drink Healthy");
-
             MouseAdapter trayIconMouseAdapter = new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
@@ -102,12 +93,7 @@ public class EatDrinkHealthy extends Application {
                             trayMenu.show(e.getComponent(), e.getX(), e.getY());
                         } else if (e.getButton() == 1) {
                             if (!primaryStage.isShowing()) {
-                                Platform.runLater(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        primaryStage.show();
-                                    }
-                                });
+                                Platform.runLater(() -> primaryStage.show());
                             }
                         }
                     } catch (IllegalArgumentException | NullPointerException ex) {

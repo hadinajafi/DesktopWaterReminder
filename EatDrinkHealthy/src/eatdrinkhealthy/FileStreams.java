@@ -1,44 +1,40 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eatdrinkhealthy;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static eatdrinkhealthy.common.Constants.FILE_NAME;
+import static eatdrinkhealthy.common.Constants.ROOT;
+
 /**
- *
- * @author hadin
+ * @author Hadi Najafi
  */
 public class FileStreams {
 
     private ObjectMapper mapper;
     private Map<String, Integer> data;
-    private final String fileName = "eatDrink.data";
-    private final String root = System.getProperty("user.home") + "/.EatDrinkHealthy/";
     private File dataFile;
 
     public FileStreams() {
         data = new HashMap<>();
         mapper = new ObjectMapper();
         creatDirectories();
-        dataFile = new File(root + fileName);
+        dataFile = new File(ROOT + FILE_NAME);
     }
 
     private void creatDirectories() {
-        File file = new File(root);
+        File file = new File(ROOT);
         if (!file.exists()) {
             file.mkdirs();
         }
-        dataFile = new File(root + fileName);
+        dataFile = new File(ROOT + FILE_NAME);
         if (!dataFile.exists()) {
             try {
                 dataFile.createNewFile();
@@ -77,9 +73,5 @@ public class FileStreams {
     public Map<String, Integer> getData() {
         readData();
         return data;
-    }
-
-    public boolean checkExistance() {
-        return dataFile.exists();
     }
 }
