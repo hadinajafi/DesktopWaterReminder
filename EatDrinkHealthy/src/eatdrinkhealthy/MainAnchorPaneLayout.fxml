@@ -35,7 +35,7 @@
                           </rowConstraints>
                            <children>
                               <Label text="Next Notify" />
-                              <Label fx:id="timecounterLable" text="Time counter" GridPane.columnIndex="1" />
+                              <Label fx:id="timerCounterLabel" text="Time counter" GridPane.columnIndex="1" />
                               <Button fx:id="skipButton" mnemonicParsing="false" onAction="#skipBtnAction" prefHeight="25.0" prefWidth="73.0" text="Skip" GridPane.columnIndex="2" />
                               <Label text="Stats " GridPane.rowIndex="1" />
                               <PieChart fx:id="statPieChart" prefHeight="223.0" prefWidth="61.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
